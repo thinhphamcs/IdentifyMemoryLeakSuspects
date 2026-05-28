@@ -1,0 +1,15 @@
+target/
+*.class
+*.jar
+*.war
+
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+
+*.log
+/tmp/oom-jobs/
+/tmp/oom-indexes/
