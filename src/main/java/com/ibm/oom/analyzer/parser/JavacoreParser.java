@@ -5,9 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,8 +42,9 @@ public class JavacoreParser {
     // ---- thread section patterns ----
     private static final Pattern THREAD_INFO =
             Pattern.compile("^3XMTHREADINFO\\s+\"([^\"]+)\".*$");
+    // 3XMTHREADINFO1 carries "Java Lang State: CW, VM State: ..." — use [A-Z]+ to avoid trailing comma
     private static final Pattern THREAD_STATE =
-            Pattern.compile("^3XMTHREADINFO[23]\\s+.*State:\\s*(\\S+).*$");
+            Pattern.compile("^3XMTHREADINFO1\\s+Java Lang State:\\s*([A-Z]+).*$");
     private static final Pattern STACK_FRAME =
             Pattern.compile("^4XESTACKTRACE\\s+at\\s+(\\S+)$");
 
