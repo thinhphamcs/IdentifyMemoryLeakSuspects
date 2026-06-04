@@ -1,0 +1,123 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f4f6f9;
+    color: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.container {
+    width: 100%;
+    max-width: 640px;
+}
+
+h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.form-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #333;
+}
+
+input[type="text"] {
+    padding: 0.6rem 0.85rem;
+    border: 1.5px solid #d0d5dd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    transition: border-color 0.15s;
+    outline: none;
+}
+
+input[type="text"]:focus {
+    border-color: #4361ee;
+}
+
+button[type="submit"] {
+    padding: 0.7rem 1.5rem;
+    background: #4361ee;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    align-self: flex-start;
+}
+
+button[type="submit"]:hover { background: #3450d4; }
+button[type="submit"]:disabled { background: #a0aec0; cursor: not-allowed; }
+
+.status-panel {
+    background: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.status-header { font-size: 0.875rem; color: #555; }
+.status-header code { font-size: 0.8rem; color: #333; }
+
+.status-badge-row { display: flex; align-items: center; gap: 0.6rem; }
+.status-label { font-weight: 600; font-size: 0.95rem; }
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-PENDING   { background: #e2e8f0; color: #4a5568; }
+.badge-INDEXING  { background: #ebf8ff; color: #2b6cb0; }
+.badge-ANALYZING { background: #fef3c7; color: #92400e; }
+.badge-COMPLETE  { background: #c6f6d5; color: #22543d; }
+.badge-FAILED    { background: #fed7d7; color: #822727; }
+
+.error-block {
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #822727;
+}
+
+.hidden { display: none !important; }

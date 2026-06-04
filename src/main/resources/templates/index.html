@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liberty OOM Analyzer</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div class="container">
+    <h1>Liberty OOM Analyzer</h1>
+    <p class="subtitle">Upload a javacore and heap dump to identify memory leak suspects.</p>
+
+    <form id="analyze-form" class="form-card">
+        <div class="field">
+            <label for="javacorePath">Javacore path (.txt)</label>
+            <input type="text" id="javacorePath" name="javacorePath"
+                   placeholder="/data/javacore.20240101.txt" required>
+        </div>
+        <div class="field">
+            <label for="heapDumpPath">Heap dump path (.phd or .hprof)</label>
+            <input type="text" id="heapDumpPath" name="heapDumpPath"
+                   placeholder="/data/heapdump.20240101.phd" required>
+        </div>
+        <button type="submit" id="submit-btn">Analyze</button>
+    </form>
+
+    <div id="status-panel" class="status-panel hidden">
+        <div class="status-header">
+            <span>Job: </span><code id="job-id"></code>
+        </div>
+        <div class="status-badge-row">
+            <span class="status-label">Status:</span>
+            <span id="status-badge" class="badge"></span>
+        </div>
+        <div id="error-block" class="error-block hidden">
+            <strong>Error:</strong> <span id="error-message"></span>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>
