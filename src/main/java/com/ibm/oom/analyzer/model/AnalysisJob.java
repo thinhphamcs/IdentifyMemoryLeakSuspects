@@ -2,6 +2,8 @@ package com.ibm.oom.analyzer.model;
 
 import java.time.Instant;
 
+import com.ibm.oom.analyzer.parser.JavacoreReport;
+
 public class AnalysisJob {
 
     private final String jobId;
@@ -12,6 +14,7 @@ public class AnalysisJob {
     private volatile JobStatus status;
     private volatile String errorMessage;
     private volatile Instant updatedAt;
+    private volatile JavacoreReport report;
 
     public AnalysisJob(String jobId, String javacorePath, String heapDumpPath) {
         this.jobId = jobId;
@@ -29,10 +32,16 @@ public class AnalysisJob {
     public JobStatus getStatus() { return status; }
     public String getErrorMessage() { return errorMessage; }
     public Instant getUpdatedAt() { return updatedAt; }
+    public JavacoreReport getReport() { return report; }
 
     public void setStatus(JobStatus status) {
         this.status = status;
         this.updatedAt = Instant.now();
+    }
+
+    public void complete(JavacoreReport report) {
+        this.report = report;
+        setStatus(JobStatus.COMPLETE);
     }
 
     public void fail(String errorMessage) {

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ibm.oom.analyzer.engine.AnalysisEngine;
 import com.ibm.oom.analyzer.model.AnalysisJob;
+import com.ibm.oom.analyzer.model.JobStatus;
 import com.ibm.oom.analyzer.service.JobRegistry;
 
 @RestController
@@ -19,9 +21,11 @@ import com.ibm.oom.analyzer.service.JobRegistry;
 public class JobController {
 
     private final JobRegistry registry;
+    private final AnalysisEngine engine;
 
-    public JobController(JobRegistry registry) {
+    public JobController(JobRegistry registry, AnalysisEngine engine) {
         this.registry = registry;
+        this.engine = engine;
     }
 
     @PostMapping
@@ -37,6 +41,7 @@ public class JobController {
         }
 
         AnalysisJob job = registry.create(javacorePath.trim(), heapDumpPath.trim());
+        engine.process(job);
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("jobId", job.getJobId()));
     }
 
@@ -51,6 +56,19 @@ public class JobController {
                         body.put("errorMessage", job.getErrorMessage());
                     }
                     return ResponseEntity.ok(body);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{jobId}/report")
+    public ResponseEntity<?> getReport(@PathVariable String jobId) {
+        return registry.find(jobId)
+                .map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
+                    return ResponseEntity.ok(job.getReport());
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
