@@ -72,4 +72,20 @@ public class JobController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{jobId}/mat-report")
+    public ResponseEntity<?> getMatReport(@PathVariable String jobId) {
+        return registry.find(jobId)
+                .<ResponseEntity<?>>map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
+                    if (job.getMatResult() == null) {
+                        return ResponseEntity.notFound().build();
+                    }
+                    return ResponseEntity.ok(job.getMatResult());
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
