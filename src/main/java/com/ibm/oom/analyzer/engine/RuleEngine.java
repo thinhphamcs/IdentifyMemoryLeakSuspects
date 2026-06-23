@@ -54,7 +54,7 @@ public class RuleEngine {
         int threshold = props.getRules().getThreadBlockThreshold();
         if (threshold <= 0 || blocked <= threshold) return;
 
-        double confidence = Math.min(1.0, (double) blocked / (threshold * 2));
+        double confidence = Math.min(1.0, (double) blocked / ((double) threshold * 2));
         fired.add(new FiredRule(
                 "EXCESSIVE_THREAD_BLOCKING",
                 "HIGH",
@@ -84,7 +84,7 @@ public class RuleEngine {
         fired.add(new FiredRule(
                 "FINALIZER_QUEUE_BACKLOG",
                 "MEDIUM",
-                Math.min(1.0, (double) depth / (threshold * 2)),
+                Math.min(1.0, (double) depth / ((double) threshold * 2)),
                 String.format("Finalizer queue has %d pending objects (threshold: %d); finalizer thread may be a bottleneck",
                         depth, threshold)
         ));

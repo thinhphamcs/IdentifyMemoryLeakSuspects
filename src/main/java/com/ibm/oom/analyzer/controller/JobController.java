@@ -97,9 +97,6 @@ public class JobController {
                         return ResponseEntity.status(HttpStatus.CONFLICT)
                                 .body(Map.of("error", "job not complete", "status", job.getStatus()));
                     }
-                    if (job.getRuleReport() == null) {
-                        return ResponseEntity.notFound().build();
-                    }
                     return ResponseEntity.ok(job.getRuleReport());
                 })
                 .orElse(ResponseEntity.notFound().build());

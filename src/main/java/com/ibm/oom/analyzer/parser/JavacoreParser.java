@@ -63,7 +63,7 @@ public class JavacoreParser {
 
     // ---- finalizer queue pattern (OpenJ9 javacore: 1STFINQ line) ----
     private static final Pattern FINALIZER_QUEUE =
-            Pattern.compile("^1STFINQ\\s+\\D*(\\d+)");
+            Pattern.compile("^1STFINQ\\s+.*?(\\d+)$");
 
     private static final int TOP_CONSUMERS = 10;
 

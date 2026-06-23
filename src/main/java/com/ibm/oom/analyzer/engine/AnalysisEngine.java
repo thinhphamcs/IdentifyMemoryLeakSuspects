@@ -56,7 +56,7 @@ public class AnalysisEngine {
             job.complete(report, ruleReport);
 
         } catch (Exception e) {
-            job.fail("analysis error: " + e.getMessage());
+            job.fail("analysis error: " + e);
         }
     }
 }
