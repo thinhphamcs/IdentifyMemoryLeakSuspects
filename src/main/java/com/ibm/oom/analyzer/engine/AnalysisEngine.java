@@ -52,8 +52,8 @@ public class AnalysisEngine {
                 }
             }
 
-            job.complete(report);
-            job.setRuleReport(ruleEngine.evaluate(job));
+            RuleReport ruleReport = ruleEngine.evaluate(report, job.getMatResult());
+            job.complete(report, ruleReport);
 
         } catch (Exception e) {
             job.fail("analysis error: " + e.getMessage());

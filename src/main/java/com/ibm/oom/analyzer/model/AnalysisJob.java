@@ -40,15 +40,15 @@ public class AnalysisJob {
     public MatResult getMatResult() { return matResult; }
     public void setMatResult(MatResult matResult) { this.matResult = matResult; }
     public RuleReport getRuleReport() { return ruleReport; }
-    public void setRuleReport(RuleReport ruleReport) { this.ruleReport = ruleReport; }
 
     public void setStatus(JobStatus status) {
         this.status = status;
         this.updatedAt = Instant.now();
     }
 
-    public void complete(JavacoreReport report) {
+    public void complete(JavacoreReport report, RuleReport ruleReport) {
         this.report = report;
+        this.ruleReport = ruleReport;
         setStatus(JobStatus.COMPLETE);
     }
 

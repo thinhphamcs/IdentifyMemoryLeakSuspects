@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ibm.oom.analyzer.config.OomProperties;
-import com.ibm.oom.analyzer.model.AnalysisJob;
 import com.ibm.oom.analyzer.parser.HeapSummary;
 import com.ibm.oom.analyzer.parser.JavacoreReport;
 import com.ibm.oom.analyzer.service.MatResult;
@@ -20,10 +19,8 @@ public class RuleEngine {
         this.props = props;
     }
 
-    public RuleReport evaluate(AnalysisJob job) {
+    public RuleReport evaluate(JavacoreReport report, MatResult mat) {
         List<FiredRule> fired = new ArrayList<>();
-        JavacoreReport report = job.getReport();
-        MatResult mat = job.getMatResult();
 
         checkHeapRetention(report, fired);
         checkThreadBlock(report, fired);
@@ -36,7 +33,7 @@ public class RuleEngine {
     private void checkHeapRetention(JavacoreReport report, List<FiredRule> fired) {
         if (report == null) return;
         HeapSummary heap = report.getHeapSummary();
-        if (heap == null || heap.getMaxBytes() <= 0) return;
+        if (heap == null || heap.getMaxBytes() <= 0 || heap.getUsedBytes() < 0) return;
 
         double retentionRatio = (double) heap.getUsedBytes() / heap.getMaxBytes();
         double threshold = props.getRules().getHeapRetentionThreshold();
@@ -55,14 +52,15 @@ public class RuleEngine {
         if (report == null) return;
         int blocked = report.getBlockedCount();
         int threshold = props.getRules().getThreadBlockThreshold();
-        if (blocked > threshold) {
-            fired.add(new FiredRule(
-                    "EXCESSIVE_THREAD_BLOCKING",
-                    "HIGH",
-                    Math.min(1.0, (double) blocked / (threshold * 2)),
-                    String.format("%d blocked threads exceeds threshold of %d", blocked, threshold)
-            ));
-        }
+        if (threshold <= 0 || blocked <= threshold) return;
+
+        double confidence = Math.min(1.0, (double) blocked / (threshold * 2));
+        fired.add(new FiredRule(
+                "EXCESSIVE_THREAD_BLOCKING",
+                "HIGH",
+                confidence,
+                String.format("%d blocked threads exceeds threshold of %d", blocked, threshold)
+        ));
     }
 
     private void checkMatSuspects(MatResult mat, List<FiredRule> fired) {
@@ -80,13 +78,15 @@ public class RuleEngine {
     private void checkFinalizerBacklog(JavacoreReport report, List<FiredRule> fired) {
         if (report == null) return;
         int depth = report.getFinalizerQueueDepth();
-        if (depth > 0) {
-            fired.add(new FiredRule(
-                    "FINALIZER_QUEUE_BACKLOG",
-                    "MEDIUM",
-                    Math.min(1.0, depth / 100.0),
-                    String.format("Finalizer queue has %d pending objects; finalizer thread may be a bottleneck", depth)
-            ));
-        }
+        int threshold = props.getRules().getFinalizerQueueThreshold();
+        if (threshold <= 0 || depth <= threshold) return;
+
+        fired.add(new FiredRule(
+                "FINALIZER_QUEUE_BACKLOG",
+                "MEDIUM",
+                Math.min(1.0, (double) depth / (threshold * 2)),
+                String.format("Finalizer queue has %d pending objects (threshold: %d); finalizer thread may be a bottleneck",
+                        depth, threshold)
+        ));
     }
 }

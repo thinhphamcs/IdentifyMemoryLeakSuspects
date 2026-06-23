@@ -93,11 +93,11 @@ public class JobController {
     public ResponseEntity<?> getRuleReport(@PathVariable String jobId) {
         return registry.find(jobId)
                 .<ResponseEntity<?>>map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
                     if (job.getRuleReport() == null) {
-                        if (job.getStatus() != JobStatus.COMPLETE) {
-                            return ResponseEntity.status(HttpStatus.CONFLICT)
-                                    .body(Map.of("error", "job not complete", "status", job.getStatus()));
-                        }
                         return ResponseEntity.notFound().build();
                     }
                     return ResponseEntity.ok(job.getRuleReport());

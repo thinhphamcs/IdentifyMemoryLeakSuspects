@@ -26,11 +26,14 @@ public class OomProperties {
     public static class Rules {
         private double heapRetentionThreshold;
         private int threadBlockThreshold;
+        private int finalizerQueueThreshold;
 
         public double getHeapRetentionThreshold() { return heapRetentionThreshold; }
         public void setHeapRetentionThreshold(double heapRetentionThreshold) { this.heapRetentionThreshold = heapRetentionThreshold; }
         public int getThreadBlockThreshold() { return threadBlockThreshold; }
         public void setThreadBlockThreshold(int threadBlockThreshold) { this.threadBlockThreshold = threadBlockThreshold; }
+        public int getFinalizerQueueThreshold() { return finalizerQueueThreshold; }
+        public void setFinalizerQueueThreshold(int finalizerQueueThreshold) { this.finalizerQueueThreshold = finalizerQueueThreshold; }
     }
 
     public static class Jobs {

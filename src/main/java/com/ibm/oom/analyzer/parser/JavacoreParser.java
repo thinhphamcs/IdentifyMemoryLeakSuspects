@@ -63,7 +63,7 @@ public class JavacoreParser {
 
     // ---- finalizer queue pattern (OpenJ9 javacore: 1STFINQ line) ----
     private static final Pattern FINALIZER_QUEUE =
-            Pattern.compile("^1STFINQ\\s+.*?(\\d+)\\s*$");
+            Pattern.compile("^1STFINQ\\s+\\D*(\\d+)");
 
     private static final int TOP_CONSUMERS = 10;
 
@@ -121,7 +121,7 @@ public class JavacoreParser {
 
                 // --- finalizer queue ---
                 Matcher fqm = FINALIZER_QUEUE.matcher(line);
-                if (fqm.matches()) { finalizerQueueDepth = Integer.parseInt(fqm.group(1)); continue; }
+                if (fqm.find()) { finalizerQueueDepth = Integer.parseInt(fqm.group(1)); continue; }
 
                 // --- memory consumers ---
                 Matcher cm = MEM_CONSUMER.matcher(line);
