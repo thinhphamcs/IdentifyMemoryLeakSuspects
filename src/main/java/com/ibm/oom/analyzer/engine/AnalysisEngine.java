@@ -22,9 +22,11 @@ public class AnalysisEngine {
 
     private final JavacoreParser parser = new JavacoreParser();
     private final MatRunner matRunner;
+    private final RuleEngine ruleEngine;
 
-    public AnalysisEngine(MatRunner matRunner) {
+    public AnalysisEngine(MatRunner matRunner, RuleEngine ruleEngine) {
         this.matRunner = matRunner;
+        this.ruleEngine = ruleEngine;
     }
 
     @Async
@@ -51,6 +53,7 @@ public class AnalysisEngine {
             }
 
             job.complete(report);
+            job.setRuleReport(ruleEngine.evaluate(job));
 
         } catch (Exception e) {
             job.fail("analysis error: " + e.getMessage());

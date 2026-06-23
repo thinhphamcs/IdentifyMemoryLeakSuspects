@@ -10,6 +10,7 @@ public class JavacoreReport {
     private final int waitingCount;
     private final HeapSummary heapSummary;
     private final List<MemoryConsumer> topMemoryConsumers;
+    private final int finalizerQueueDepth;
 
     private JavacoreReport(Builder b) {
         this.filePath = b.filePath;
@@ -18,6 +19,7 @@ public class JavacoreReport {
         this.waitingCount = b.waitingCount;
         this.heapSummary = b.heapSummary;
         this.topMemoryConsumers = List.copyOf(b.topMemoryConsumers);
+        this.finalizerQueueDepth = b.finalizerQueueDepth;
     }
 
     public String getFilePath() { return filePath; }
@@ -26,6 +28,7 @@ public class JavacoreReport {
     public int getWaitingCount() { return waitingCount; }
     public HeapSummary getHeapSummary() { return heapSummary; }
     public List<MemoryConsumer> getTopMemoryConsumers() { return topMemoryConsumers; }
+    public int getFinalizerQueueDepth() { return finalizerQueueDepth; }
 
     public static Builder builder(String filePath) { return new Builder(filePath); }
 
@@ -36,6 +39,7 @@ public class JavacoreReport {
         private int waitingCount;
         private HeapSummary heapSummary;
         private List<MemoryConsumer> topMemoryConsumers = List.of();
+        private int finalizerQueueDepth;
 
         private Builder(String filePath) { this.filePath = filePath; }
 
@@ -44,6 +48,7 @@ public class JavacoreReport {
         public Builder waitingCount(int waitingCount) { this.waitingCount = waitingCount; return this; }
         public Builder heapSummary(HeapSummary heapSummary) { this.heapSummary = heapSummary; return this; }
         public Builder topMemoryConsumers(List<MemoryConsumer> consumers) { this.topMemoryConsumers = consumers; return this; }
+        public Builder finalizerQueueDepth(int depth) { this.finalizerQueueDepth = depth; return this; }
 
         public JavacoreReport build() { return new JavacoreReport(this); }
     }
