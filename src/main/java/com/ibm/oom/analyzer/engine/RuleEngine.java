@@ -37,6 +37,7 @@ public class RuleEngine {
 
         double retentionRatio = (double) heap.getUsedBytes() / heap.getMaxBytes();
         double threshold = props.getRules().getHeapRetentionThreshold();
+        if (threshold <= 0) return;
         if (retentionRatio > threshold) {
             fired.add(new FiredRule(
                     "HIGH_HEAP_RETENTION",
@@ -65,7 +66,9 @@ public class RuleEngine {
 
     private void checkMatSuspects(MatResult mat, List<FiredRule> fired) {
         if (mat == null) return;
-        if (mat.getExitCode() == 0 && !mat.getOutputLines().isEmpty()) {
+        List<String> outputLines = mat.getOutputLines();
+        if (mat.getExitCode() == 0
+                && outputLines.stream().anyMatch(l -> l.toLowerCase().contains("leak"))) {
             fired.add(new FiredRule(
                     "MAT_SUSPECTS_PRESENT",
                     "CRITICAL",
