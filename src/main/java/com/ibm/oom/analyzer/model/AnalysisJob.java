@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import com.ibm.oom.analyzer.engine.RuleReport;
 import com.ibm.oom.analyzer.parser.JavacoreReport;
+import com.ibm.oom.analyzer.report.ReportFiles;
 import com.ibm.oom.analyzer.service.MatResult;
 
 public class AnalysisJob {
@@ -19,6 +20,7 @@ public class AnalysisJob {
     private volatile JavacoreReport report;
     private volatile MatResult matResult;
     private volatile RuleReport ruleReport;
+    private volatile ReportFiles reportFiles;
 
     public AnalysisJob(String jobId, String javacorePath, String heapDumpPath) {
         this.jobId = jobId;
@@ -40,6 +42,8 @@ public class AnalysisJob {
     public MatResult getMatResult() { return matResult; }
     public void setMatResult(MatResult matResult) { this.matResult = matResult; }
     public RuleReport getRuleReport() { return ruleReport; }
+    public ReportFiles getReportFiles() { return reportFiles; }
+    public void setReportFiles(ReportFiles reportFiles) { this.reportFiles = reportFiles; }
 
     public void setStatus(JobStatus status) {
         this.status = status;
