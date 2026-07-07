@@ -88,4 +88,17 @@ public class JobController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{jobId}/rule-report")
+    public ResponseEntity<?> getRuleReport(@PathVariable String jobId) {
+        return registry.find(jobId)
+                .<ResponseEntity<?>>map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
+                    return ResponseEntity.ok(job.getRuleReport());
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

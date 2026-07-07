@@ -61,6 +61,10 @@ public class JavacoreParser {
     private static final Pattern MEM_CONSUMER =
             Pattern.compile("^2CLTEXTCLLOS\\s+(\\S+)\\s+(\\d+)\\s+(\\d+)");
 
+    // ---- finalizer queue pattern (OpenJ9 javacore: 1STFINQ line) ----
+    private static final Pattern FINALIZER_QUEUE =
+            Pattern.compile("^1STFINQ\\s+.*?(\\d+)\\D*$");
+
     private static final int TOP_CONSUMERS = 10;
 
     public JavacoreReport parse(String filePath) throws IOException {
@@ -70,6 +74,7 @@ public class JavacoreParser {
         long heapTotal = -1;
         long heapFree = -1;
         long heapInUse = -1;
+        int finalizerQueueDepth = 0;
 
         // mutable thread-accumulation state
         String currentThreadName = null;
@@ -114,6 +119,10 @@ public class JavacoreParser {
                 Matcher him = HEAP_INUSE.matcher(line);
                 if (him.find()) { heapInUse = Long.parseLong(him.group(1)); continue; }
 
+                // --- finalizer queue ---
+                Matcher fqm = FINALIZER_QUEUE.matcher(line);
+                if (fqm.find()) { finalizerQueueDepth = Integer.parseInt(fqm.group(1)); continue; }
+
                 // --- memory consumers ---
                 Matcher cm = MEM_CONSUMER.matcher(line);
                 if (cm.find()) {
@@ -151,6 +160,7 @@ public class JavacoreParser {
                 .waitingCount(waitingCount)
                 .heapSummary(heapSummary)
                 .topMemoryConsumers(topConsumers)
+                .finalizerQueueDepth(finalizerQueueDepth)
                 .build();
     }
 
