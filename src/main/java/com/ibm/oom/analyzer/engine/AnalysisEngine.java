@@ -12,6 +12,8 @@ import com.ibm.oom.analyzer.model.AnalysisJob;
 import com.ibm.oom.analyzer.model.JobStatus;
 import com.ibm.oom.analyzer.parser.JavacoreParser;
 import com.ibm.oom.analyzer.parser.JavacoreReport;
+import com.ibm.oom.analyzer.report.ReportFiles;
+import com.ibm.oom.analyzer.report.ReportGenerator;
 import com.ibm.oom.analyzer.service.MatResult;
 import com.ibm.oom.analyzer.service.MatRunner;
 
@@ -23,10 +25,12 @@ public class AnalysisEngine {
     private final JavacoreParser parser = new JavacoreParser();
     private final MatRunner matRunner;
     private final RuleEngine ruleEngine;
+    private final ReportGenerator reportGenerator;
 
-    public AnalysisEngine(MatRunner matRunner, RuleEngine ruleEngine) {
+    public AnalysisEngine(MatRunner matRunner, RuleEngine ruleEngine, ReportGenerator reportGenerator) {
         this.matRunner = matRunner;
         this.ruleEngine = ruleEngine;
+        this.reportGenerator = reportGenerator;
     }
 
     @Async
@@ -54,6 +58,13 @@ public class AnalysisEngine {
 
             RuleReport ruleReport = ruleEngine.evaluate(report, job.getMatResult());
             job.complete(report, ruleReport);
+
+            try {
+                ReportFiles rf = reportGenerator.generate(job);
+                job.setReportFiles(rf);
+            } catch (Exception e) {
+                log.warn("Report generation failed for job {}: {}", job.getJobId(), e.getMessage());
+            }
 
         } catch (Exception e) {
             job.fail("analysis error: " + e);
