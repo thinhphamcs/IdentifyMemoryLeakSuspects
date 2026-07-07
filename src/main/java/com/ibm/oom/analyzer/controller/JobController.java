@@ -101,4 +101,25 @@ public class JobController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/{jobId}/report-files")
+    public ResponseEntity<?> getReportFiles(@PathVariable String jobId) {
+        return registry.find(jobId)
+                .<ResponseEntity<?>>map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
+                    if (job.getReportFiles() == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(Map.of("error", "report files not available"));
+                    }
+                    var body = new java.util.LinkedHashMap<String, Object>();
+                    body.put("jobId", jobId);
+                    body.put("jsonReport", job.getReportFiles().getJsonPath());
+                    body.put("htmlReport", job.getReportFiles().getHtmlPath());
+                    return ResponseEntity.ok(body);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
