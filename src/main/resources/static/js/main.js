@@ -8,6 +8,11 @@
     const statusBadge = document.getElementById('status-badge');
     const errorBlock = document.getElementById('error-block');
     const errorMessage = document.getElementById('error-message');
+    const reportLinks = document.getElementById('report-links');
+    const linkReport = document.getElementById('link-report');
+    const linkMat = document.getElementById('link-mat');
+    const linkRule = document.getElementById('link-rule');
+    const linkFiles = document.getElementById('link-files');
 
     const TERMINAL = new Set(['COMPLETE', 'FAILED']);
     let pollTimer = null;
@@ -19,21 +24,28 @@
 
         submitBtn.disabled = true;
         clearInterval(pollTimer);
+        pollTimer = null;
         hideStatus();
 
         try {
             const params = new URLSearchParams({ javacorePath, heapDumpPath });
             const res = await fetch('/api/jobs?' + params.toString(), { method: 'POST' });
             if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
+                const err = await res.json().catch(function () { return {}; });
                 alert('Failed to start job: ' + (err.error || res.status));
                 submitBtn.disabled = false;
                 return;
             }
-            const { jobId } = await res.json();
+            const data = await res.json();
+            const jobId = data.jobId;
+            if (!jobId) {
+                alert('Server returned no jobId.');
+                submitBtn.disabled = false;
+                return;
+            }
             showStatus(jobId, 'PENDING');
-            pollTimer = setInterval(() => poll(jobId), 5000);
             poll(jobId);
+            pollTimer = setInterval(function () { poll(jobId); }, 2000);
         } catch (err) {
             alert('Network error: ' + err.message);
             submitBtn.disabled = false;
@@ -48,7 +60,11 @@
             showStatus(jobId, data.status, data.errorMessage);
             if (TERMINAL.has(data.status)) {
                 clearInterval(pollTimer);
+                pollTimer = null;
                 submitBtn.disabled = false;
+                if (data.status === 'COMPLETE') {
+                    showReportLinks(jobId);
+                }
             }
         } catch (_) {
             // network blip — keep polling
@@ -70,8 +86,18 @@
         statusPanel.classList.remove('hidden');
     }
 
+    function showReportLinks(jobId) {
+        var base = '/api/jobs/' + encodeURIComponent(jobId);
+        linkReport.href = base + '/report';
+        linkMat.href = base + '/mat-report';
+        linkRule.href = base + '/rule-report';
+        linkFiles.href = base + '/report-files';
+        reportLinks.classList.remove('hidden');
+    }
+
     function hideStatus() {
         statusPanel.classList.add('hidden');
         errorBlock.classList.add('hidden');
+        reportLinks.classList.add('hidden');
     }
 })();

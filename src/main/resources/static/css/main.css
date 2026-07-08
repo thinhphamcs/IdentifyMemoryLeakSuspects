@@ -120,4 +120,31 @@ button[type="submit"]:disabled { background: #a0aec0; cursor: not-allowed; }
     color: #822727;
 }
 
+.report-links {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 0.75rem;
+}
+
+.report-links-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.report-links ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.report-links a {
+    color: #4361ee;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.report-links a:hover { text-decoration: underline; }
+
 .hidden { display: none !important; }
