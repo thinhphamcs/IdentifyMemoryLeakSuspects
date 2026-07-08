@@ -1,8 +1,11 @@
 package com.ibm.oom.analyzer.controller;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -119,6 +122,56 @@ public class JobController {
                     body.put("jsonReport", job.getReportFiles().getJsonPath());
                     body.put("htmlReport", job.getReportFiles().getHtmlPath());
                     return ResponseEntity.ok(body);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{jobId}/report-files/json")
+    public ResponseEntity<?> downloadJsonReport(@PathVariable String jobId) {
+        return registry.find(jobId)
+                .<ResponseEntity<?>>map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
+                    if (job.getReportFiles() == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(Map.of("error", "report files not available"));
+                    }
+                    try {
+                        byte[] content = Files.readAllBytes(Path.of(job.getReportFiles().getJsonPath()));
+                        return ResponseEntity.ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(content);
+                    } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(Map.of("error", "could not read JSON report: " + e.getMessage()));
+                    }
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{jobId}/report-files/html")
+    public ResponseEntity<?> downloadHtmlReport(@PathVariable String jobId) {
+        return registry.find(jobId)
+                .<ResponseEntity<?>>map(job -> {
+                    if (job.getStatus() != JobStatus.COMPLETE) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body(Map.of("error", "job not complete", "status", job.getStatus()));
+                    }
+                    if (job.getReportFiles() == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body(Map.of("error", "report files not available"));
+                    }
+                    try {
+                        byte[] content = Files.readAllBytes(Path.of(job.getReportFiles().getHtmlPath()));
+                        return ResponseEntity.ok()
+                                .contentType(MediaType.TEXT_HTML)
+                                .body(content);
+                    } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(Map.of("error", "could not read HTML report: " + e.getMessage()));
+                    }
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

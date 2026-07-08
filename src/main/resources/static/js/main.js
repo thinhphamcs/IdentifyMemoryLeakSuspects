@@ -12,7 +12,8 @@
     const linkReport = document.getElementById('link-report');
     const linkMat = document.getElementById('link-mat');
     const linkRule = document.getElementById('link-rule');
-    const linkFiles = document.getElementById('link-files');
+    const linkFilesHtml = document.getElementById('link-files-html');
+    const linkFilesJson = document.getElementById('link-files-json');
 
     const TERMINAL = new Set(['COMPLETE', 'FAILED']);
     let pollTimer = null;
@@ -91,7 +92,8 @@
         linkReport.href = base + '/report';
         linkMat.href = base + '/mat-report';
         linkRule.href = base + '/rule-report';
-        linkFiles.href = base + '/report-files';
+        linkFilesHtml.href = base + '/report-files/html';
+        linkFilesJson.href = base + '/report-files/json';
         reportLinks.classList.remove('hidden');
     }
 
