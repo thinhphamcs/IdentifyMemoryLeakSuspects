@@ -57,7 +57,7 @@ public class AnalysisEngine {
             }
 
             RuleReport ruleReport = ruleEngine.evaluate(report, job.getMatResult());
-            job.complete(report, ruleReport);
+            job.storeResults(report, ruleReport);
 
             try {
                 ReportFiles rf = reportGenerator.generate(job);
@@ -65,6 +65,8 @@ public class AnalysisEngine {
             } catch (Exception e) {
                 log.warn("Report generation failed for job {}: {}", job.getJobId(), e.getMessage());
             }
+
+            job.complete();
 
         } catch (Exception e) {
             job.fail("analysis error: " + e);

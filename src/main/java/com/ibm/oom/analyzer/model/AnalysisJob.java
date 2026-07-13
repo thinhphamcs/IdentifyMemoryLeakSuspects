@@ -50,9 +50,13 @@ public class AnalysisJob {
         this.updatedAt = Instant.now();
     }
 
-    public void complete(JavacoreReport report, RuleReport ruleReport) {
+    public void storeResults(JavacoreReport report, RuleReport ruleReport) {
         this.report = report;
         this.ruleReport = ruleReport;
+        this.updatedAt = Instant.now();
+    }
+
+    public void complete() {
         setStatus(JobStatus.COMPLETE);
     }
 
